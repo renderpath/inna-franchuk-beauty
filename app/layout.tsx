@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
+    metadataBase: new URL('https://inna-franchuk-beauty.vercel.app'),
     title: {
         default: 'Инна Франчук — ресницы и брови в Первомайском, Крым',
         template: '%s | Инна Франчук Beauty',
@@ -16,15 +17,22 @@ export const metadata: Metadata = {
         'ламинирование ресниц Крым',
         'оформление бровей Первомайское',
         'мастер ресниц Крым',
-        'lash brow Crimea',
     ],
     openGraph: {
         title: 'Инна Франчук — ресницы и брови в Первомайском',
         description:
-            'Premium lash & brow studio в пгт Первомайское, Республика Крым. Онлайн-запись, портфолио, прайс и отзывы.',
+            'Premium lash & brow studio в пгт Первомайское, Республика Крым.',
         type: 'website',
         locale: 'ru_RU',
         siteName: 'Инна Франчук Beauty',
+        images: [
+            {
+                url: '/images/hero-bg.png',
+                width: 1200,
+                height: 630,
+                alt: 'Инна Франчук — ресницы и брови',
+            },
+        ],
     },
 };
 

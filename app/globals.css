@@ -1,20 +1,16 @@
 @import "tailwindcss";
 
 :root {
-    --color-bg: #fbf5f1;
-    --color-bg-soft: #f6ece6;
-    --color-card: rgba(255, 255, 255, 0.72);
-    --color-text: #2d211c;
-    --color-muted: #7d6b63;
-    --color-accent: #c4937e;
-    --color-accent-dark: #a97764;
-    --color-border: rgba(196, 147, 126, 0.24);
+    --color-bg: #fff8f4;
+    --color-bg-light: #fffdfb;
+    --color-text: #2d211d;
+    --color-muted: #7b6b65;
+    --color-accent: #c58e7b;
+    --color-accent-dark: #b87965;
+    --color-border: #ead3c9;
 
-    --shadow-soft: 0 10px 40px rgba(180, 140, 120, 0.08);
-    --shadow-card: 0 18px 60px rgba(180, 140, 120, 0.14);
-
-    --radius-lg: 24px;
-    --radius-xl: 32px;
+    --shadow-soft: 0 22px 70px rgba(177, 132, 115, 0.1);
+    --shadow-card: 0 34px 100px rgba(177, 132, 115, 0.16);
 }
 
 * {
@@ -23,27 +19,35 @@
 
 html {
     scroll-behavior: smooth;
+    background: var(--color-bg);
 }
 
 body {
     margin: 0;
     background: var(--color-bg);
     color: var(--color-text);
+    font-family: var(--font-geist-sans), Arial, sans-serif;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
 }
 
 button,
-a {
-    -webkit-tap-highlight-color: transparent;
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
 }
 
 img {
-    max-width: 100%;
     display: block;
-}
-
-::selection {
-    background: var(--color-accent);
-    color: white;
+    max-width: 100%;
 }
 
 .container-luxury {
@@ -51,12 +55,18 @@ img {
     margin-inline: auto;
 }
 
-.section-padding {
-    padding-block: 96px;
+@media (max-width: 1024px) {
+    .container-luxury {
+        width: min(100% - 28px, 100%);
+    }
 }
 
-@media (max-width: 768px) {
-    .section-padding {
-        padding-block: 64px;
+@media (max-width: 640px) {
+    .container-luxury {
+        width: min(100% - 20px, 100%);
+    }
+
+    section {
+        overflow: hidden;
     }
 }

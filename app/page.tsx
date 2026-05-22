@@ -1,26 +1,37 @@
-import { Header } from '@/components/layout/header';
-import { Footer } from '@/components/layout/footer';
-import { MobileBottomNav } from '@/components/layout/mobile-bottom-nav';
+import { LocalBusinessSchema } from '@/components/seo/local-business-schema';
+
 import { HeroSection } from '@/components/sections/hero-section';
 import { ServicesSection } from '@/components/sections/services-section';
-import { BeforeAfterSection } from '@/components/sections/before-after-section';
+import { PortfolioSection } from '@/components/sections/portfolio-section';
 import { TestimonialsSection } from '@/components/sections/testimonials-section';
-import { BlogSection } from '@/components/sections/blog-section';
-import { FaqSection } from '@/components/sections/faq-section';
-import { CtaSection } from '@/components/sections/cta-section';
+import { ContactsSection } from '@/components/sections/contacts-section';
+
+import { Footer } from '@/components/layout/footer';
+import { FloatingActions } from '@/components/layout/floating-actions';
+import { ScrollToTop } from '@/components/layout/scroll-to-top';
+import { MobileBottomNav } from '@/components/layout/mobile-bottom-nav';
 
 export default function HomePage() {
     return (
-        <main className="min-h-screen overflow-hidden bg-[var(--color-bg)] text-[var(--color-text)]">
-            <Header />
+        <main className="min-h-screen overflow-hidden bg-[#fff8f4]">
+            <LocalBusinessSchema />
+
             <HeroSection />
+
             <ServicesSection />
-            <BeforeAfterSection />
+
+            <PortfolioSection />
+
             <TestimonialsSection />
-            <BlogSection />
-            <FaqSection />
-            <CtaSection />
+
+            <ContactsSection />
+
             <Footer />
+
+            <FloatingActions />
+
+            <ScrollToTop />
+
             <MobileBottomNav />
         </main>
     );

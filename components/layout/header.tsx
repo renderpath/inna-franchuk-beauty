@@ -8,35 +8,35 @@ const nav = [
     { label: 'Главная', href: '#' },
     { label: 'Услуги', href: '#services' },
     { label: 'Портфолио', href: '#portfolio' },
+    { label: 'Обо мне', href: '#about' },
     { label: 'Отзывы', href: '#reviews' },
-    { label: 'Блог', href: '#blog' },
     { label: 'Контакты', href: '#contacts' },
 ];
 
 export function Header() {
     return (
         <motion.header
-            initial={{ opacity: 0, y: -24 }}
+            initial={{ opacity: 0, y: -18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="fixed left-0 top-0 z-50 w-full px-4 pt-4"
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed left-0 top-0 z-50 w-full px-4 pt-5"
         >
-            <div className="container-luxury flex items-center justify-between rounded-full border border-white/70 bg-white/55 px-5 py-3 shadow-[var(--shadow-soft)] backdrop-blur-2xl">
+            <div className="container-luxury flex h-[68px] items-center justify-between rounded-full border border-white/80 bg-white/70 px-5 shadow-[var(--shadow-soft)] backdrop-blur-2xl">
                 <Link href="#" className="leading-none">
-                    <span className="block text-sm font-semibold uppercase tracking-[0.18em]">
+                    <span className="block text-[15px] font-semibold uppercase tracking-[0.24em] text-[var(--color-heading)]">
                         Lash & Brow
                     </span>
-                    <span className="text-xs italic text-[var(--color-accent)]">
+                    <span className="block pt-1 text-[12px] italic tracking-[0.08em] text-[var(--color-accent)]">
                         by Inna
                     </span>
                 </Link>
 
-                <nav className="hidden items-center gap-8 lg:flex">
+                <nav className="hidden items-center gap-7 lg:flex">
                     {nav.map((item) => (
                         <Link
                             key={item.href}
                             href={item.href}
-                            className="text-sm text-[var(--color-muted)] transition hover:text-[var(--color-text)]"
+                            className="text-[13px] text-[var(--color-muted)] transition hover:text-[var(--color-heading)]"
                         >
                             {item.label}
                         </Link>
@@ -46,13 +46,13 @@ export function Header() {
                 <div className="flex items-center gap-3">
                     <Link
                         href="#booking"
-                        className="rounded-full bg-[var(--color-accent)] px-6 py-3 text-sm font-medium text-white transition hover:-translate-y-0.5 hover:bg-[var(--color-accent-dark)]"
+                        className="luxury-button h-11 px-6 text-[13px]"
                     >
                         Записаться
                     </Link>
 
                     <button
-                        className="hidden h-11 w-11 items-center justify-center rounded-full border border-[var(--color-border)] bg-white/60 transition hover:bg-white sm:flex"
+                        className="hidden h-11 w-11 items-center justify-center rounded-full border border-[var(--color-border)] bg-white/70 text-[var(--color-accent)] transition hover:bg-white sm:flex"
                         aria-label="Социальные сети"
                     >
                         <Camera size={18} />
