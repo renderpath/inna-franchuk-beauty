@@ -1,11 +1,14 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
     CalendarDays,
     Clock3,
     CreditCard,
+    LayoutDashboard,
+    RefreshCw,
     Search,
     Trash2,
     User2,
@@ -24,7 +27,7 @@ type Order = {
     id: number;
     name: string;
     phone: string;
-    service: string;
+    services: string[];
     comment?: string;
     status: string;
     price: number;
@@ -51,7 +54,6 @@ const calendarHours = [
     '16:00',
     '17:00',
     '18:00',
-    '19:00',
 ];
 
 export default function AdminDashboardPage() {
@@ -59,6 +61,7 @@ export default function AdminDashboardPage() {
 
     const [orders, setOrders] = useState<Order[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('ALL');
@@ -77,6 +80,7 @@ export default function AdminDashboardPage() {
         try {
             const data = await getOrders();
             setOrders(data);
+            setLastUpdated(new Date());
         } catch (error) {
             console.error(error);
         } finally {
@@ -92,7 +96,13 @@ export default function AdminDashboardPage() {
             return;
         }
 
-        loadOrders();
+        void loadOrders();
+
+        const interval = window.setInterval(() => {
+            void loadOrders();
+        }, 10000);
+
+        return () => window.clearInterval(interval);
     }, [router]);
 
     const totalRevenue = orders.reduce(
@@ -110,12 +120,16 @@ export default function AdminDashboardPage() {
         if (search.trim()) {
             const value = search.toLowerCase();
 
-            result = result.filter(
-                (order) =>
+            result = result.filter((order) => {
+                const servicesText =
+                    order.services?.join(', ').toLowerCase() || '';
+
+                return (
                     order.name.toLowerCase().includes(value) ||
                     order.phone.includes(value) ||
-                    order.service.toLowerCase().includes(value)
-            );
+                    servicesText.includes(value)
+                );
+            });
         }
 
         switch (sortBy) {
@@ -176,6 +190,10 @@ export default function AdminDashboardPage() {
             default:
                 return 'bg-gray-100 text-gray-700';
         }
+    };
+
+    const getServicesText = (order: Order) => {
+        return order.services?.length ? order.services.join(', ') : '—';
     };
 
     const handleStatusChange = async (id: number, status: string) => {
@@ -283,17 +301,36 @@ export default function AdminDashboardPage() {
                     </div>
 
                     <nav className="grid gap-2 px-4">
-                        <button className="flex h-14 items-center rounded-2xl bg-[#cf8f78] px-5 text-left text-sm font-semibold text-white">
+                        <Link
+                            href="/admin/dashboard"
+                            className="flex h-14 items-center gap-3 rounded-2xl bg-[#cf8f78] px-5 text-sm font-semibold text-white"
+                        >
+                            <LayoutDashboard size={18} />
                             Заявки
-                        </button>
+                        </Link>
 
-                        <button className="flex h-14 items-center rounded-2xl px-5 text-left text-sm font-semibold text-[#2d211d] transition hover:bg-[#fff8f4]">
+                        <Link
+                            href="/admin/calendar"
+                            className="flex h-14 items-center gap-3 rounded-2xl px-5 text-sm font-semibold text-[#2d211d] transition hover:bg-[#fff8f4]"
+                        >
+                            <CalendarDays size={18} />
                             Календарь
-                        </button>
+                        </Link>
 
-                        <button className="flex h-14 items-center rounded-2xl px-5 text-left text-sm font-semibold text-[#2d211d] transition hover:bg-[#fff8f4]">
+                        <Link
+                            href="/admin/finance"
+                            className="flex h-14 items-center gap-3 rounded-2xl px-5 text-sm font-semibold text-[#2d211d] transition hover:bg-[#fff8f4]"
+                        >
+                            <CreditCard size={18} />
                             Финансы
-                        </button>
+                        </Link>
+
+                        <Link
+                            href="/"
+                            className="flex h-14 items-center rounded-2xl px-5 text-sm font-semibold text-[#2d211d] transition hover:bg-[#fff8f4]"
+                        >
+                            На сайт
+                        </Link>
                     </nav>
                 </aside>
 
@@ -309,15 +346,33 @@ export default function AdminDashboardPage() {
                             </p>
                         </div>
 
-                        <button
-                            onClick={() => {
-                                localStorage.removeItem('admin_token');
-                                router.push('/admin');
-                            }}
-                            className="h-12 rounded-full border border-[#ead3c9] bg-white px-6 text-sm font-semibold text-[#2d211d]"
-                        >
-                            Выйти
-                        </button>
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                            {lastUpdated && (
+                                <p className="text-sm text-[#7b6b65]">
+                                    Обновлено:{' '}
+                                    {lastUpdated.toLocaleTimeString('ru-RU')}
+                                </p>
+                            )}
+
+                            <button
+                                type="button"
+                                onClick={() => void loadOrders()}
+                                className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-[#ead3c9] bg-white px-6 text-sm font-semibold text-[#2d211d]"
+                            >
+                                <RefreshCw size={17} />
+                                Обновить
+                            </button>
+
+                            <button
+                                onClick={() => {
+                                    localStorage.removeItem('admin_token');
+                                    router.push('/admin');
+                                }}
+                                className="h-12 rounded-full border border-[#ead3c9] bg-white px-6 text-sm font-semibold text-[#2d211d]"
+                            >
+                                Выйти
+                            </button>
+                        </div>
                     </div>
 
                     <div className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -520,7 +575,9 @@ export default function AdminDashboardPage() {
                                                         </p>
 
                                                         <p className="text-[#7b6b65]">
-                                                            {order.service}
+                                                            {getServicesText(
+                                                                order
+                                                            )}
                                                         </p>
                                                     </button>
                                                 ))
@@ -625,9 +682,9 @@ export default function AdminDashboardPage() {
                                             <div className="grid gap-2 text-sm text-[#2d211d]">
                                                 <p>
                                                     <span className="font-semibold">
-                                                        Услуга:
+                                                        Услуги:
                                                     </span>{' '}
-                                                    {order.service}
+                                                    {getServicesText(order)}
                                                 </p>
 
                                                 <p>

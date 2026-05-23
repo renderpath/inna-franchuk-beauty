@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import orderRoutes from './routes/order.routes';
 import adminRoutes from './routes/admin.routes';
 
+import slotsRoutes from './routes/slots.routes';
+
 dotenv.config();
 
 const app = express();
@@ -32,6 +34,8 @@ app.get('/api/health', (_req, res) => {
 
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
+
+app.use('/api/slots', slotsRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server started on http://localhost:${PORT}`);

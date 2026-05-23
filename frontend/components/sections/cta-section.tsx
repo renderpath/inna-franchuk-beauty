@@ -1,77 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { motion } from 'motion/react';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
-    AlertCircle,
-    CalendarDays,
-    CheckCircle2,
-    Send,
-    Sparkles,
-} from 'lucide-react';
+import { CalendarDays, Sparkles } from 'lucide-react';
 
-const bookingSchema = z.object({
-    name: z.string().min(2, 'Введите имя'),
-    phone: z.string().min(10, 'Введите корректный телефон'),
-    service: z.string().min(1, 'Выберите услугу'),
-    comment: z.string().optional(),
-});
-
-type BookingFormData = z.infer<typeof bookingSchema>;
+import { BookingForm } from '@/components/booking-form/booking-form';
 
 export function CtaSection() {
-    const [isSuccess, setIsSuccess] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-
-    const {
-        register,
-        handleSubmit,
-        reset,
-        formState: { errors, isSubmitting },
-    } = useForm<BookingFormData>({
-        resolver: zodResolver(bookingSchema),
-        defaultValues: {
-            name: '',
-            phone: '',
-            service: '',
-            comment: '',
-        },
-    });
-
-    const onSubmit = async (data: BookingFormData) => {
-        try {
-            setIsSuccess(false);
-            setErrorMessage('');
-
-            const response = await fetch(
-                'http://localhost:5001/api/orders',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error('Ошибка отправки заявки');
-            }
-
-            setIsSuccess(true);
-            reset();
-        } catch (error) {
-            console.error(error);
-
-            setErrorMessage(
-                'Не удалось отправить заявку. Попробуйте позже.'
-            );
-        }
-    };
-
     return (
         <section
             id="booking"
@@ -110,6 +44,18 @@ export function CtaSection() {
                                 <br />
                                 на удобное время
                             </h2>
+
+                            <div className="mt-5 flex items-start gap-3 text-[13px] leading-6 text-white/82">
+                                <CalendarDays
+                                    size={18}
+                                    className="mt-1 shrink-0"
+                                />
+
+                                <p>
+                                    Форма связана с CRM: занятые слоты
+                                    автоматически скрываются.
+                                </p>
+                            </div>
                         </div>
                     </div>
 
@@ -130,137 +76,12 @@ export function CtaSection() {
                             </h2>
 
                             <p className="max-w-[560px] text-[16px] leading-8 text-[#7b6b65] md:text-[18px]">
-                                Оставьте заявку — мастер свяжется с вами,
-                                поможет выбрать услугу, эффект и удобное время.
+                                Выберите услуги, дату и свободное время. Заявка
+                                сразу попадёт в CRM-админку.
                             </p>
                         </div>
 
-                        <form
-                            className="grid gap-4 md:gap-5"
-                            onSubmit={handleSubmit(onSubmit)}
-                        >
-                            <label className="grid gap-2">
-                                <span className="text-[14px] font-semibold text-[#2d211d]">
-                                    Ваше имя
-                                </span>
-
-                                <input
-                                    type="text"
-                                    placeholder="Например, Анна"
-                                    {...register('name')}
-                                    className="h-13 rounded-[16px] border border-[#ead3c9] bg-[#fff8f4]/80 px-4 text-[15px] text-[#2d211d] outline-none transition focus:border-[#c58e7b] focus:bg-white md:h-15 md:rounded-[18px] md:px-5"
-                                />
-
-                                {errors.name && (
-                                    <span className="text-[13px] text-[#b87965]">
-                                        {errors.name.message}
-                                    </span>
-                                )}
-                            </label>
-
-                            <label className="grid gap-2">
-                                <span className="text-[14px] font-semibold text-[#2d211d]">
-                                    Телефон
-                                </span>
-
-                                <input
-                                    type="tel"
-                                    placeholder="+7 (___) ___-__-__"
-                                    {...register('phone')}
-                                    className="h-13 rounded-[16px] border border-[#ead3c9] bg-[#fff8f4]/80 px-4 text-[15px] text-[#2d211d] outline-none transition focus:border-[#c58e7b] focus:bg-white md:h-15 md:rounded-[18px] md:px-5"
-                                />
-
-                                {errors.phone && (
-                                    <span className="text-[13px] text-[#b87965]">
-                                        {errors.phone.message}
-                                    </span>
-                                )}
-                            </label>
-
-                            <label className="grid gap-2">
-                                <span className="text-[14px] font-semibold text-[#2d211d]">
-                                    Услуга
-                                </span>
-
-                                <select
-                                    {...register('service')}
-                                    className="h-13 rounded-[16px] border border-[#ead3c9] bg-[#fff8f4]/80 px-4 text-[15px] text-[#2d211d] outline-none transition focus:border-[#c58e7b] focus:bg-white md:h-15 md:rounded-[18px] md:px-5"
-                                >
-                                    <option value="">Выберите услугу</option>
-                                    <option>Классическое наращивание</option>
-                                    <option>1.5D объём</option>
-                                    <option>2D объём</option>
-                                    <option>3D объём</option>
-                                    <option>Мокрый эффект</option>
-                                    <option>Ламинирование ресниц</option>
-                                    <option>Оформление бровей</option>
-                                    <option>Ламинирование бровей</option>
-                                </select>
-
-                                {errors.service && (
-                                    <span className="text-[13px] text-[#b87965]">
-                                        {errors.service.message}
-                                    </span>
-                                )}
-                            </label>
-
-                            <label className="grid gap-2">
-                                <span className="text-[14px] font-semibold text-[#2d211d]">
-                                    Комментарий
-                                </span>
-
-                                <textarea
-                                    rows={4}
-                                    placeholder="Желаемая дата, время или вопрос"
-                                    {...register('comment')}
-                                    className="resize-none rounded-[16px] border border-[#ead3c9] bg-[#fff8f4]/80 px-4 py-4 text-[15px] text-[#2d211d] outline-none transition focus:border-[#c58e7b] focus:bg-white md:rounded-[18px] md:px-5"
-                                />
-                            </label>
-
-                            {isSuccess && (
-                                <div className="flex items-start gap-3 rounded-[16px] border border-[#cde8cf] bg-[#f0fff2] px-4 py-4 text-[14px] leading-6 text-[#3f7d45] md:items-center md:rounded-[18px] md:px-5">
-                                    <CheckCircle2
-                                        size={18}
-                                        className="mt-1 shrink-0 md:mt-0"
-                                    />
-
-                                    Заявка успешно отправлена.
-                                </div>
-                            )}
-
-                            {errorMessage && (
-                                <div className="flex items-start gap-3 rounded-[16px] border border-[#f0c7c7] bg-[#fff1f1] px-4 py-4 text-[14px] leading-6 text-[#b94b4b] md:items-center md:rounded-[18px] md:px-5">
-                                    <AlertCircle
-                                        size={18}
-                                        className="mt-1 shrink-0 md:mt-0"
-                                    />
-
-                                    {errorMessage}
-                                </div>
-                            )}
-
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="mt-2 inline-flex h-13 items-center justify-center gap-3 rounded-full bg-[#cf8f78] px-7 text-[15px] font-semibold text-white shadow-[0_18px_45px_rgba(183,123,104,0.22)] transition duration-300 hover:-translate-y-1 hover:bg-[#b87965] disabled:cursor-not-allowed disabled:opacity-70 md:mt-3 md:h-15 md:px-10 md:text-[16px]"
-                            >
-                                {isSubmitting
-                                    ? 'Отправляем...'
-                                    : 'Отправить заявку'}
-
-                                <Send size={18} />
-                            </button>
-
-                            <div className="mt-1 flex items-start gap-3 text-[12px] leading-6 text-[#7b6b65] md:mt-2 md:text-[13px]">
-                                <CalendarDays
-                                    size={18}
-                                    className="mt-1 shrink-0 text-[#c58e7b] md:mt-0"
-                                />
-
-                                После отправки заявка сохраняется в базе данных
-                                и будет отображаться в админке.
-                            </div>
-                        </form>
+                        <BookingForm />
                     </div>
                 </motion.div>
             </div>

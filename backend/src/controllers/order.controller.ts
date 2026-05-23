@@ -6,9 +6,15 @@ const allowedStatuses = ['NEW', 'CONFIRMED', 'COMPLETED', 'CANCELLED'];
 
 export const createOrder = async (req: Request, res: Response) => {
     try {
-        const { name, phone, service, comment, scheduledAt } = req.body;
+        const { name, phone, services, comment, price, scheduledAt } = req.body;
 
-        if (!name || !phone || !service) {
+        if (
+            !name ||
+            !phone ||
+            !services ||
+            !Array.isArray(services) ||
+            services.length === 0
+        ) {
             return res.status(400).json({
                 message: 'Заполните обязательные поля',
             });
@@ -18,8 +24,9 @@ export const createOrder = async (req: Request, res: Response) => {
             data: {
                 name,
                 phone,
-                service,
+                services,
                 comment,
+                price: Number(price) || 0,
                 scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
             },
         });
@@ -106,6 +113,30 @@ export const updateOrderSchedule = async (req: Request, res: Response) => {
     }
 };
 
+export const updateOrderPrice = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { price } = req.body;
+
+        const order = await prisma.order.update({
+            where: {
+                id: Number(id),
+            },
+            data: {
+                price: Number(price) || 0,
+            },
+        });
+
+        return res.json(order);
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            message: 'Ошибка сервера',
+        });
+    }
+};
+
 export const deleteOrder = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
@@ -128,14 +159,18 @@ export const deleteOrder = async (req: Request, res: Response) => {
     }
 };
 
-export const updateOrderPrice = async (req: Request, res: Response) => {
+export const updateOrderAdminComment = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { price } = req.body;
+        const { adminComment } = req.body;
 
         const order = await prisma.order.update({
-            where: { id: Number(id) },
-            data: { price: Number(price) || 0 },
+            where: {
+                id: Number(id),
+            },
+            data: {
+                adminComment: adminComment || '',
+            },
         });
 
         return res.json(order);

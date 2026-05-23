@@ -19,6 +19,38 @@ export async function loginAdmin(login: string, password: string) {
     return response.json();
 }
 
+export async function createOrder(data: {
+    name: string;
+    phone: string;
+    services: string[];
+    comment?: string;
+    price: number;
+    scheduledAt: string;
+}) {
+    const response = await fetch(`${API_URL}/orders`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            name: data.name,
+            phone: data.phone,
+            services: data.services,
+            comment: data.comment,
+            price: data.price,
+            scheduledAt: data.scheduledAt,
+        }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+        throw new Error(result.message || 'Ошибка отправки заявки');
+    }
+
+    return result;
+}
+
 export async function getOrders() {
     const token = localStorage.getItem('admin_token');
 
@@ -80,6 +112,27 @@ export async function updateOrderSchedule(
     return response.json();
 }
 
+export async function updateOrderPrice(id: number, price: number) {
+    const token = localStorage.getItem('admin_token');
+
+    const response = await fetch(`${API_URL}/orders/${id}/price`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+            price,
+        }),
+    });
+
+    if (!response.ok) {
+        throw new Error('Ошибка обновления цены');
+    }
+
+    return response.json();
+}
+
 export async function deleteOrder(id: number) {
     const token = localStorage.getItem('admin_token');
 
@@ -97,20 +150,38 @@ export async function deleteOrder(id: number) {
     return response.json();
 }
 
-export async function updateOrderPrice(id: number, price: number) {
-    const token = localStorage.getItem('admin_token');
-
-    const response = await fetch(`${API_URL}/orders/${id}/price`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ price }),
-    });
+export async function getBusySlots(date: string) {
+    const response = await fetch(`${API_URL}/slots?date=${date}`);
 
     if (!response.ok) {
-        throw new Error('Ошибка обновления цены');
+        throw new Error('Ошибка загрузки слотов');
+    }
+
+    return response.json();
+}
+
+export async function updateOrderAdminComment(
+    id: number,
+    adminComment: string
+) {
+    const token = localStorage.getItem('admin_token');
+
+    const response = await fetch(
+        `${API_URL}/orders/${id}/admin-comment`,
+        {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                adminComment,
+            }),
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error('Ошибка обновления комментария');
     }
 
     return response.json();
