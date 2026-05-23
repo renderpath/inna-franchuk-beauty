@@ -180,9 +180,11 @@ export function PortfolioSection() {
 
                             <Link
                                 href="/booking"
-                                className="inline-flex rounded-full bg-white px-8 py-4 text-[15px] font-semibold text-[#2d211d] transition hover:-translate-y-1"
+                                className="inline-flex min-h-[56px] items-center justify-center rounded-full bg-white px-8 py-4 text-center transition duration-300 hover:-translate-y-1 hover:bg-[#fff8f4]"
                             >
-                                Получить консультацию
+    <span className="relative z-10 text-[15px] font-semibold text-[#2d211d]">
+        Получить консультацию
+    </span>
                             </Link>
                         </div>
                     </div>

@@ -5,7 +5,13 @@ import { useForm } from 'react-hook-form';
 import { motion } from 'motion/react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CalendarDays, CheckCircle2, Send, Sparkles } from 'lucide-react';
+import {
+    AlertCircle,
+    CalendarDays,
+    CheckCircle2,
+    Send,
+    Sparkles,
+} from 'lucide-react';
 
 const bookingSchema = z.object({
     name: z.string().min(2, 'Введите имя'),
@@ -18,6 +24,7 @@ type BookingFormData = z.infer<typeof bookingSchema>;
 
 export function CtaSection() {
     const [isSuccess, setIsSuccess] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const {
         register,
@@ -35,14 +42,34 @@ export function CtaSection() {
     });
 
     const onSubmit = async (data: BookingFormData) => {
-        setIsSuccess(false);
+        try {
+            setIsSuccess(false);
+            setErrorMessage('');
 
-        console.log('Booking form data:', data);
+            const response = await fetch(
+                'http://localhost:5001/api/orders',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                }
+            );
 
-        await new Promise((resolve) => setTimeout(resolve, 800));
+            if (!response.ok) {
+                throw new Error('Ошибка отправки заявки');
+            }
 
-        setIsSuccess(true);
-        reset();
+            setIsSuccess(true);
+            reset();
+        } catch (error) {
+            console.error(error);
+
+            setErrorMessage(
+                'Не удалось отправить заявку. Попробуйте позже.'
+            );
+        }
     };
 
     return (
@@ -161,11 +188,13 @@ export function CtaSection() {
                                 >
                                     <option value="">Выберите услугу</option>
                                     <option>Классическое наращивание</option>
-                                    <option>2D / 3D объём</option>
+                                    <option>1.5D объём</option>
+                                    <option>2D объём</option>
+                                    <option>3D объём</option>
                                     <option>Мокрый эффект</option>
                                     <option>Ламинирование ресниц</option>
                                     <option>Оформление бровей</option>
-                                    <option>Комплексные услуги</option>
+                                    <option>Ламинирование бровей</option>
                                 </select>
 
                                 {errors.service && (
@@ -194,8 +223,19 @@ export function CtaSection() {
                                         size={18}
                                         className="mt-1 shrink-0 md:mt-0"
                                     />
-                                    Заявка успешно подготовлена. Backend
-                                    подключим следующим этапом.
+
+                                    Заявка успешно отправлена.
+                                </div>
+                            )}
+
+                            {errorMessage && (
+                                <div className="flex items-start gap-3 rounded-[16px] border border-[#f0c7c7] bg-[#fff1f1] px-4 py-4 text-[14px] leading-6 text-[#b94b4b] md:items-center md:rounded-[18px] md:px-5">
+                                    <AlertCircle
+                                        size={18}
+                                        className="mt-1 shrink-0 md:mt-0"
+                                    />
+
+                                    {errorMessage}
                                 </div>
                             )}
 
@@ -207,6 +247,7 @@ export function CtaSection() {
                                 {isSubmitting
                                     ? 'Отправляем...'
                                     : 'Отправить заявку'}
+
                                 <Send size={18} />
                             </button>
 
@@ -215,8 +256,9 @@ export function CtaSection() {
                                     size={18}
                                     className="mt-1 shrink-0 text-[#c58e7b] md:mt-0"
                                 />
-                                После отправки заявка будет уходить в админку,
-                                Telegram и на Яндекс.Почту.
+
+                                После отправки заявка сохраняется в базе данных
+                                и будет отображаться в админке.
                             </div>
                         </form>
                     </div>
